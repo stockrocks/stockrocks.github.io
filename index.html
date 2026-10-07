@@ -7,204 +7,273 @@
   <meta name="description" content="stockrocks 美股社区 — 盘前解读、盘中异动、盘后复盘，和一群认真做美股的人一起进化。" />
   <style>
     :root {
-      --bg: #0a0e14;
-      --bg2: #0d1420;
-      --card: rgba(255, 255, 255, 0.04);
-      --border: rgba(255, 255, 255, 0.09);
-      --text: #eef2f7;
-      --muted: rgba(238, 242, 247, 0.62);
-      --green: #22c55e;
-      --red: #ef4444;
-      --accent: #38bdf8;
-      --gold: #fbbf24;
+      --bg: #060607;
+      --bg-soft: #0b0b0d;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #f4f4f5;
+      --muted: #a1a1aa;
+      --faint: #63636b;
+      --accent1: #8b7cff;
+      --accent2: #5eead4;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
-        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter,
+        "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
       background: var(--bg);
       color: var(--text);
-      line-height: 1.7;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
     }
-    /* 背景光晕 */
-    .glow { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.25; pointer-events: none; z-index: 0; }
-    .glow.g1 { width: 520px; height: 520px; background: #0ea5e9; top: -160px; left: -120px; }
-    .glow.g2 { width: 460px; height: 460px; background: #22c55e; bottom: -140px; right: -100px; opacity: 0.14; }
-    .glow.g3 { width: 380px; height: 380px; background: #8b5cf6; top: 40%; left: 55%; opacity: 0.10; }
+    ::selection { background: rgba(139, 124, 255, 0.35); }
+
+    /* 背景：细网格 + 顶部微光 */
+    .bg-fx { position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: radial-gradient(rgba(255,255,255,0.045) 1px, transparent 1px);
+      background-size: 32px 32px;
+      mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, black 30%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, black 30%, transparent 100%);
+    }
+    .bg-glow { position: fixed; z-index: 0; pointer-events: none;
+      top: -320px; left: 50%; transform: translateX(-50%);
+      width: 900px; height: 480px;
+      background: radial-gradient(ellipse at center, rgba(139,124,255,0.14), transparent 70%);
+      filter: blur(40px);
+    }
 
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 50;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 1rem 2.5rem;
-      background: rgba(10, 14, 20, 0.72);
-      backdrop-filter: blur(12px);
+      padding: 0 2rem; height: 64px;
+      background: rgba(6, 6, 7, 0.6);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
     }
-    .logo { font-weight: 800; font-size: 1.35rem; letter-spacing: 0.02em; }
-    .logo span { color: var(--green); }
-    .nav-links { display: flex; gap: 2rem; }
-    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.95rem; transition: color 0.2s; }
+    .logo { font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; text-decoration: none; color: var(--text); }
+    .logo b { font-weight: 700; }
+    .logo .r { color: var(--accent1); }
+    .nav-links { display: flex; gap: 1.75rem; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.875rem; transition: color 0.2s; }
     .nav-links a:hover { color: var(--text); }
+
     .btn {
-      display: inline-block; padding: 0.7rem 1.6rem; border-radius: 0.6rem;
-      font-weight: 700; text-decoration: none; transition: transform 0.15s, box-shadow 0.15s;
-      border: none; cursor: pointer; font-size: 1rem;
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 0.65rem 1.5rem; border-radius: 8px;
+      font-weight: 600; font-size: 0.925rem; text-decoration: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      border: 1px solid transparent; cursor: pointer; white-space: nowrap;
     }
-    .btn-primary { background: var(--green); color: #04120a; }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(34, 197, 94, 0.35); }
-    .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
-    .btn-ghost:hover { border-color: rgba(255,255,255,0.3); }
-    .btn-sm { padding: 0.5rem 1.1rem; font-size: 0.9rem; }
+    .btn-white { background: #fff; color: #060607; }
+    .btn-white:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(255,255,255,0.18); }
+    .btn-ghost { background: transparent; color: var(--text); border-color: var(--border); }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.03); }
+    .btn-sm { padding: 0.45rem 1rem; font-size: 0.825rem; }
 
     main { position: relative; z-index: 1; }
+
     .hero {
-      min-height: 100vh; display: flex; flex-direction: column;
+      min-height: 92vh; display: flex; flex-direction: column;
       align-items: center; justify-content: center; text-align: center;
-      padding: 7rem 1.5rem 4rem;
+      padding: 8rem 1.5rem 5rem; max-width: 900px; margin: 0 auto;
     }
-    .badge {
+    .pill {
       display: inline-flex; align-items: center; gap: 0.5rem;
-      padding: 0.35rem 1rem; border-radius: 999px;
-      background: rgba(34, 197, 94, 0.12); border: 1px solid rgba(34, 197, 94, 0.35);
-      color: var(--green); font-size: 0.85rem; margin-bottom: 1.5rem;
+      padding: 0.3rem 0.9rem; border-radius: 999px;
+      border: 1px solid var(--border); background: rgba(255,255,255,0.03);
+      color: var(--muted); font-size: 0.8rem; letter-spacing: 0.04em;
+      margin-bottom: 2rem;
     }
-    .badge .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 1.6s infinite; }
-    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
-    .hero h1 { font-size: clamp(2.6rem, 6vw, 4.5rem); font-weight: 800; letter-spacing: 0.02em; line-height: 1.25; }
-    .hero h1 .hl { background: linear-gradient(90deg, var(--green), var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-    .hero p.sub { color: var(--muted); font-size: 1.15rem; max-width: 640px; margin: 1.25rem auto 2.25rem; }
-    .cta-row { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+    .pill .dot { width: 6px; height: 6px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2)); }
+    .hero h1 {
+      font-size: clamp(2.75rem, 7vw, 5rem);
+      font-weight: 700; letter-spacing: -0.03em; line-height: 1.12;
+    }
+    .hero h1 .grad {
+      background: linear-gradient(100deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .hero .sub {
+      color: var(--muted); font-size: 1.1rem; max-width: 600px;
+      margin: 1.5rem auto 2.5rem; letter-spacing: -0.005em;
+    }
+    .cta-row { display: flex; gap: 0.875rem; flex-wrap: wrap; justify-content: center; }
 
-    /* 跑马灯 */
-    .ticker-wrap { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--bg2); overflow: hidden; padding: 0.8rem 0; }
-    .ticker { display: inline-flex; gap: 3rem; white-space: nowrap; animation: scroll 28s linear infinite; padding-left: 100%; }
-    @keyframes scroll { to { transform: translateX(-100%); } }
-    .ticker span { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.95rem; color: var(--muted); }
-    .ticker .up { color: var(--green); }
-    .ticker .down { color: var(--red); }
+    .divider { border: none; border-top: 1px solid var(--border); max-width: 1120px; margin: 0 auto; }
 
-    section { padding: 5.5rem 1.5rem; max-width: 1120px; margin: 0 auto; }
-    .sec-title { text-align: center; font-size: 2rem; font-weight: 800; margin-bottom: 0.75rem; }
-    .sec-sub { text-align: center; color: var(--muted); max-width: 620px; margin: 0 auto 3rem; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; }
+    section { padding: 6rem 1.5rem; max-width: 1120px; margin: 0 auto; }
+    .kicker {
+      text-align: center; font-size: 0.78rem; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--faint); margin-bottom: 1rem;
+    }
+    .sec-title {
+      text-align: center; font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.9rem;
+    }
+    .sec-sub { text-align: center; color: var(--muted); max-width: 560px; margin: 0 auto 3.5rem; font-size: 1.02rem; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem; }
     .card {
-      background: var(--card); border: 1px solid var(--border); border-radius: 1rem;
-      padding: 1.75rem; transition: transform 0.2s, border-color 0.2s;
+      background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.012));
+      border: 1px solid var(--border); border-radius: 12px;
+      padding: 1.75rem; transition: border-color 0.25s, transform 0.25s, background 0.25s;
     }
-    .card:hover { transform: translateY(-4px); border-color: rgba(56, 189, 248, 0.4); }
-    .card .icon { font-size: 2rem; margin-bottom: 0.9rem; }
-    .card h3 { font-size: 1.12rem; margin-bottom: 0.5rem; }
-    .card p { color: var(--muted); font-size: 0.93rem; }
-
-    .who { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
-    .who li { list-style: none; background: var(--card); border: 1px solid var(--border); border-radius: 1rem; padding: 1.4rem 1.6rem; color: var(--muted); }
-    .who li strong { color: var(--text); display: block; margin-bottom: 0.3rem; }
-
-    .join {
-      text-align: center; background: linear-gradient(180deg, rgba(34,197,94,0.08), transparent);
-      border: 1px solid var(--border); border-radius: 1.5rem; padding: 4rem 2rem; margin: 0 auto; max-width: 860px;
+    .card:hover { border-color: rgba(139,124,255,0.35); transform: translateY(-3px); }
+    .card .icon {
+      width: 40px; height: 40px; border-radius: 10px; margin-bottom: 1.25rem;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(139,124,255,0.1); border: 1px solid rgba(139,124,255,0.22);
     }
-    .join h2 { font-size: 2.1rem; margin-bottom: 1rem; }
-    .join p { color: var(--muted); margin-bottom: 2rem; }
+    .card .icon svg { width: 20px; height: 20px; stroke: var(--accent1); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+    .card h3 { font-size: 1.02rem; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 0.5rem; }
+    .card p { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
 
-    footer { border-top: 1px solid var(--border); padding: 2.5rem 1.5rem; text-align: center; color: var(--muted); font-size: 0.88rem; position: relative; z-index: 1; }
-    footer .logo { margin-bottom: 0.5rem; display: inline-block; }
-    .risk { max-width: 860px; margin: 1rem auto 0; font-size: 0.78rem; color: rgba(238,242,247,0.38); }
+    .who { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+    .who-item {
+      border: 1px solid var(--border); border-radius: 12px; padding: 1.6rem 1.75rem;
+      background: var(--bg-soft);
+    }
+    .who-item .tag { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent2); margin-bottom: 0.6rem; }
+    .who-item h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.4rem; letter-spacing: -0.01em; }
+    .who-item p { color: var(--muted); font-size: 0.9rem; }
+
+    .join-box {
+      text-align: center; border: 1px solid var(--border); border-radius: 20px;
+      padding: 5rem 2rem; max-width: 880px; margin: 0 auto;
+      background:
+        radial-gradient(ellipse 60% 80% at 50% 120%, rgba(139,124,255,0.12), transparent 70%),
+        var(--bg-soft);
+    }
+    .join-box h2 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1rem; }
+    .join-box h2 .grad {
+      background: linear-gradient(100deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .join-box p { color: var(--muted); margin-bottom: 2.25rem; font-size: 1.02rem; }
+
+    footer {
+      border-top: 1px solid var(--border); padding: 3rem 1.5rem 2.5rem;
+      text-align: center; position: relative; z-index: 1;
+    }
+    footer .logo { display: inline-block; margin-bottom: 0.75rem; }
+    footer p { color: var(--faint); font-size: 0.85rem; }
+    .risk { max-width: 720px; margin: 1.25rem auto 0; font-size: 0.75rem; color: #4b4b52; line-height: 1.8; }
+
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
 
     @media (max-width: 640px) {
-      nav { padding: 0.9rem 1.2rem; }
+      nav { padding: 0 1.1rem; }
       .nav-links { display: none; }
-      section { padding: 4rem 1.2rem; }
+      section { padding: 4.5rem 1.25rem; }
+      .join-box { padding: 3.5rem 1.5rem; }
     }
   </style>
 </head>
 <body>
-  <div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div>
+  <div class="bg-fx"></div>
+  <div class="bg-glow"></div>
 
   <nav>
-    <div class="logo">stock<span>rocks</span></div>
+    <a class="logo" href="#"><b>stock</b><span class="r">rocks</span></a>
     <div class="nav-links">
       <a href="#features">社区内容</a>
       <a href="#who">适合谁</a>
-      <a href="#join">加入我们</a>
+      <a href="#join">加入</a>
     </div>
-    <a class="btn btn-primary btn-sm" href="#join">加入社区</a>
+    <a class="btn btn-white btn-sm" href="#join">加入社区</a>
   </nav>
 
   <main>
     <header class="hero">
-      <div class="badge"><span class="dot"></span> 美股交易者社区 · 每天都在</div>
-      <h1>和一群认真做美股的人<br />一起 <span class="hl">rock the market</span></h1>
-      <p class="sub">盘前解读、盘中异动追踪、盘后复盘 —— stockrocks 把每天的市场功课，变成一群人的共同节奏。</p>
+      <div class="pill"><span class="dot"></span>美股交易者社区</div>
+      <h1>和认真做美股的人<br />一起 <span class="grad">rock the market</span></h1>
+      <p class="sub">盘前解读 · 盘中异动追踪 · 盘后复盘。把每天的市场功课，变成一群人的共同节奏。</p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="#join">加入 stockrocks</a>
-        <a class="btn btn-ghost" href="#features">先看看社区里有什么</a>
+        <a class="btn btn-white" href="#join">加入 stockrocks</a>
+        <a class="btn btn-ghost" href="#features">看看社区里有什么</a>
       </div>
     </header>
 
-    <div class="ticker-wrap" aria-hidden="true">
-      <div class="ticker">
-        <span>NVDA <b class="up">+2.1%</b></span><span>AAPL <b class="up">+0.8%</b></span>
-        <span>TSLA <b class="down">-1.2%</b></span><span>AMD <b class="up">+3.4%</b></span>
-        <span>SPX <b class="up">+0.6%</b></span><span>NDX <b class="up">+1.1%</b></span>
-        <span>META <b class="up">+1.5%</b></span><span>AVGO <b class="down">-0.4%</b></span>
-        <span>MSFT <b class="up">+0.9%</b></span><span>SMH <b class="up">+2.2%</b></span>
-      </div>
-    </div>
+    <hr class="divider" />
 
     <section id="features">
-      <h2 class="sec-title">社区每天在做什么</h2>
-      <p class="sec-sub">不是晒单群，是把交易这件事拆成每天可执行的功课。</p>
+      <div class="kicker reveal">社区内容</div>
+      <h2 class="sec-title reveal">每天的功课，有人陪你做</h2>
+      <p class="sec-sub reveal">不是晒单群，是把交易拆成每天可执行的动作。</p>
       <div class="grid">
-        <div class="card">
-          <div class="icon">🌅</div>
+        <div class="card reveal">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div>
           <h3>盘前解读</h3>
           <p>开盘前梳理隔夜消息、期货盘面与关键价位，带着计划进场，而不是追着价格跑。</p>
         </div>
-        <div class="card">
-          <div class="icon">⚡</div>
+        <div class="card reveal">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg></div>
           <h3>盘中异动追踪</h3>
-          <p>半导体、AI 链、财报股的突发异动第一时间同步，帮你不错过真正重要的波动。</p>
+          <p>半导体、AI 链、财报股的突发异动第一时间同步，不错过真正重要的波动。</p>
         </div>
-        <div class="card">
-          <div class="icon">🌙</div>
+        <div class="card reveal">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></div>
           <h3>盘后复盘</h3>
-          <p>每天收盘后复盘当日逻辑：什么推了指数、哪个板块在切换、明天盯什么数据。</p>
+          <p>收盘后复盘当日逻辑：什么推了指数、哪个板块在切换、明天盯什么数据。</p>
         </div>
-        <div class="card">
-          <div class="icon">🤝</div>
+        <div class="card reveal">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
           <h3>交易者交流</h3>
           <p>和做美股、做指数期货的人聊真实的仓位管理与执行细节，少走弯路。</p>
         </div>
       </div>
     </section>
 
+    <hr class="divider" />
+
     <section id="who">
-      <h2 class="sec-title">适合这样的你</h2>
-      <p class="sec-sub">如果你在以下任何一条里看到了自己，欢迎进来聊聊。</p>
-      <ul class="who">
-        <li><strong>📈 美股交易者</strong>做个股、ETF 或指数期货，想跟上每天的市场节奏。</li>
-        <li><strong>🔍 爱做功课的人</strong>相信复盘和计划，而不是盘中的情绪化操作。</li>
-        <li><strong>🌏 华语时区玩家</strong>半夜盯盘不孤单，有人一起熬、一起复盘。</li>
-      </ul>
+      <div class="kicker reveal">适合谁</div>
+      <h2 class="sec-title reveal">如果你在其中看到了自己</h2>
+      <p class="sec-sub reveal">欢迎进来聊聊。</p>
+      <div class="who">
+        <div class="who-item reveal">
+          <div class="tag">Trader</div>
+          <h3>美股交易者</h3>
+          <p>做个股、ETF 或指数期货，想跟上每天的市场节奏。</p>
+        </div>
+        <div class="who-item reveal">
+          <div class="tag">Research</div>
+          <h3>爱做功课的人</h3>
+          <p>相信复盘和计划，而不是盘中的情绪化操作。</p>
+        </div>
+        <div class="who-item reveal">
+          <div class="tag">Community</div>
+          <h3>华语时区玩家</h3>
+          <p>半夜盯盘不孤单，有人一起熬、一起复盘。</p>
+        </div>
+      </div>
     </section>
 
     <section id="join">
-      <div class="join">
-        <h2>准备好加入了吗？</h2>
-        <p>点击下方按钮，获取入群方式。名额开放中，先到先得。</p>
+      <div class="join-box reveal">
+        <div class="kicker">加入</div>
+        <h2>准备好 <span class="grad">开始</span> 了吗</h2>
+        <p>点击下方按钮，通过 Discord 加入 stockrocks 社区。</p>
         <!-- 入群链接：Discord 邀请 -->
-        <a class="btn btn-primary" href="https://discord.gg/C9MhRaa7be" target="_blank" rel="noopener">获取入群方式</a>
+        <a class="btn btn-white" href="https://discord.gg/C9MhRaa7be" target="_blank" rel="noopener">加入 Discord 社区</a>
       </div>
     </section>
   </main>
 
   <footer>
-    <div class="logo">stock<span>rocks</span></div>
+    <a class="logo" href="#"><b>stock</b><span class="r">rocks</span></a>
     <p>© 2026 stockrocks · 美股交易者社区</p>
     <p class="risk">风险提示：社区内容仅为信息分享与交流，不构成任何投资建议。交易有风险，入市需谨慎，请根据自身风险承受能力独立决策。</p>
   </footer>
+
+  <script>
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  </script>
 </body>
 </html>
